@@ -9,6 +9,17 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    ></script>
+    <script type="text/javascript">
+      (function () {
+        emailjs.init({
+          publicKey: "mobejs2HxNPPDAh_U",
+        });
+      })();
+    </script>
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -779,6 +790,7 @@
                 Send Message
               </button>
             </form>
+            <div id="form-status" class="text-center text-sm mt-4"></div>
           </div>
 
           <div class="md:w-1/2">
@@ -1049,6 +1061,54 @@
 
       window.addEventListener("scroll", animateOnScroll);
       window.addEventListener("load", animateOnScroll);
+    </script>
+    <script>
+      document.querySelector("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const subject = document.getElementById("subject").value.trim();
+        const message = document.getElementById("message").value.trim();
+        const formStatus = document.getElementById("form-status");
+
+        // Clear previous status message
+        formStatus.textContent = "";
+        formStatus.className = "text-center text-sm mt-4";
+
+        if (!name || !email || !subject || !message) {
+          formStatus.textContent = "Please fill out all fields.";
+          formStatus.classList.add("text-red-500");
+          return;
+        }
+
+        try {
+          const response = await emailjs.send(
+            "service_rayotb8",
+            "template_yu6q56w",
+            {
+              name,
+              email,
+              subject,
+              message,
+            }
+          );
+
+          if (response.status === 200) {
+            formStatus.textContent = "Message sent successfully!";
+            formStatus.classList.add("text-green-500");
+            e.target.reset();
+          } else {
+            formStatus.textContent =
+              "Failed to send message. Please try again.";
+            formStatus.classList.add("text-red-500");
+          }
+        } catch (error) {
+          console.error("Error sending email:", error);
+          formStatus.textContent = "Something went wrong. Please try again.";
+          formStatus.classList.add("text-red-500");
+        }
+      });
     </script>
   </body>
 </html>
